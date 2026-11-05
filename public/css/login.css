@@ -1,0 +1,195 @@
+
+/* =================================
+   PALETA DE COLORES ARCO
+================================= */
+
+:root {
+    --arco-negro: #080B16;
+    --arco-azul-oscuro: #10245E;
+    --arco-azul: #1235C8;
+    --arco-verde: #32C51B;
+    --arco-blanco: #FFFFFF;
+    --arco-gris: #F3F5F8;
+}
+
+
+/* =================================
+   FONDO GENERAL
+================================= */
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(
+        135deg,
+        var(--arco-negro),
+        var(--arco-azul-oscuro),
+        var(--arco-azul)
+    );
+    font-family: Arial, sans-serif;
+}
+
+
+/* =================================
+   CONTENEDOR DEL LOGIN
+================================= */
+
+.login-container {
+    background: var(--arco-blanco);
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =================================
+   TITULO Y SUBTITULO
+================================= */
+
+.login-title {
+    text-align: center;
+    color: var(--arco-negro);
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #777777;
+    margin-bottom: 30px;
+}
+
+
+/* =================================
+   LOGO
+================================= */
+
+.login-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 2px;
+}
+
+.login-logo img {
+    width: 130px;
+    height: auto;
+    object-fit: contain;
+}
+
+
+/* =================================
+   CAMPOS DEL FORMULARIO
+================================= */
+
+.form-label {
+    color: var(--arco-negro);
+    font-weight: 600;
+}
+
+.form-control {
+    padding: 12px;
+    border-radius: 9px;
+    border: 1px solid #DDE1E7;
+}
+
+.form-control:focus {
+    border-color: var(--arco-azul);
+    box-shadow: 0 0 0 0.2rem rgba(18, 53, 200, 0.12);
+}
+
+
+/* =================================
+   BOTON INICIAR SESION
+================================= */
+
+.btn-login {
+    background: linear-gradient(
+        135deg,
+        var(--arco-azul-oscuro),
+        var(--arco-azul)
+    );
+    color: var(--arco-blanco);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(18, 53, 200, 0.3);
+}
+
+/* Efecto al pasar el cursor */
+.btn-login:hover {
+    background: linear-gradient(
+        135deg,
+        var(--arco-azul),
+        var(--arco-verde)
+    );
+    color: var(--arco-blanco);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 18px rgba(18, 53, 200, 0.35);
+}
+
+/* Animacion del icono */
+.btn-login i {
+    font-size: 19px;
+    transition: transform 0.3s ease;
+}
+
+.btn-login:hover i {
+    transform: translateX(5px);
+}
+
+/* Efecto al presionar */
+.btn-login:active {
+    transform: scale(0.98);
+}
+
+
+/* =================================
+   ENLACES
+================================= */
+
+.register-link {
+    text-align: center;
+    margin-top: 25px;
+    color: #777777;
+}
+
+.register-link a {
+    color: var(--arco-azul);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+    color: var(--arco-verde);
+}
+
+
+/* =================================
+   RESPONSIVE - CELULARES
+================================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 20px;
+    }
+
+    .login-container {
+        padding: 30px 25px;
+    }
+
+}
