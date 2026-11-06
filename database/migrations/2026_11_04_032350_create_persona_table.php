@@ -16,17 +16,11 @@ return new class extends Migration
     $table->string('apellido_paterno', 100);
     $table->string('apellido_materno', 100)->nullable();
 
-    $table->string('tipo_personal', 30);
+    $table->unsignedTinyInteger('tipo_personal')->default(1);
 
-    $table->foreignId('id_division')
+    $table->foreignId('id_edificio')
         ->nullable()
-        ->constrained('division', 'id_division')
-        ->nullOnDelete();
-
-    $table->foreignId('id_user')
-        ->nullable()
-        ->unique()
-        ->constrained('users')
+        ->constrained('edificio', 'id_edificio')
         ->nullOnDelete();
 });
     }
