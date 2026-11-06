@@ -12,8 +12,8 @@ return new class extends Migration
         Schema::create('equipo', function (Blueprint $table) {
             $table->id('id_equipo');
 
-            $table->foreignId('id_alumno')
-                ->constrained('alumno', 'id_alumno');
+            $table->foreignId('propietario')
+                ->constrained('persona', 'matricula');
 
             $table->foreignId('id_marca')
                 ->constrained('marca', 'id_marca');

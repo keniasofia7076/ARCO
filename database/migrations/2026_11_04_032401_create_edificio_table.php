@@ -12,6 +12,7 @@ return new class extends Migration
         Schema::create('edificio', function (Blueprint $table) {
             $table->id('id_edificio');
             $table->string('nombre', 100)->unique();
+            $table->string('division', 200);
         });
     }
 

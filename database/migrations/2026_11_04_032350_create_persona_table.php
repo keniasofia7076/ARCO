@@ -9,12 +9,26 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('persona', function (Blueprint $table) {
-            $table->id('id_persona');
-            $table->string('nombre', 100);
-            $table->string('apellido_paterno', 100);
-            $table->string('apellido_materno', 100)->nullable();
-        });
+        Schema::create('personal', function (Blueprint $table) {
+    $table->id('matricula');
+
+    $table->string('nombre', 100);
+    $table->string('apellido_paterno', 100);
+    $table->string('apellido_materno', 100)->nullable();
+
+    $table->string('tipo_personal', 30);
+
+    $table->foreignId('id_division')
+        ->nullable()
+        ->constrained('division', 'id_division')
+        ->nullOnDelete();
+
+    $table->foreignId('id_user')
+        ->nullable()
+        ->unique()
+        ->constrained('users')
+        ->nullOnDelete();
+});
     }
 
     public function down(): void

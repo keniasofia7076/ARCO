@@ -10,19 +10,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('visita', function (Blueprint $table) {
-            $table->id('id_visita');
+    $table->id('id_visita');
 
-            $table->foreignId('id_persona')
-                ->constrained('persona', 'id_persona');
+    $table->string('nombre', 100);
+    $table->string('apellido_paterno', 100);
+    $table->string('apellido_materno', 100)->nullable();
+    $table->string('correo', 150)->nullable();
 
-            $table->timestampTz('fecha_hora_entrada')
-                ->useCurrent();
+    $table->foreignId('id_edificio')
+        ->constrained('edificio', 'id_edificio')
+        ->restrictOnDelete();
 
-            $table->timestampTz('fecha_hora_salida')
-                ->nullable();
+    $table->timestampTz('fecha_hora_entrada')->useCurrent();
+    $table->timestampTz('fecha_hora_salida')->nullable();
 
-            $table->string('motivo', 250);
-        });
+    $table->string('motivo', 250);
+});
     }
 
     public function down(): void
