@@ -1,107 +1,47 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('visitas.layout')
+@section('content')
+<div class="d-flex justify-content-between mb-3">
+    <h1>Visitas</h1>
+    <a href="{{ route('visitas.create') }}" class="btn btn-primary align-self-center">Nueva visita</a>
+</div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
+<table class="table table-striped">
+    <thead>
+        <tr><th>#</th><th>Persona</th><th>Edificio</th><th>Entrada</th><th>Salida</th><th>Motivo</th><th></th></tr>
+    </thead>
+    <tbody>
+    @forelse ($visitas as $v)
+        <tr>
+            <td>{{ $v->id_visita }}</td>
+            <td>{{ $v->persona->nombre_completo }}</td>
+            <td>{{ $v->edificio->nombre }}</td>
+            <td>{{ $v->fecha_hora_entrada?->format('d/m/Y H:i') }}</td>
+            <td>
+                @if ($v->fecha_hora_salida)
+                    {{ $v->fecha_hora_salida->format('d/m/Y H:i') }}
+                @else
+                    <form method="POST" action="{{ route('visitas.salida', $v) }}" class="d-inline">
+                        @csrf @method('PATCH')
+                        <button class="btn btn-sm btn-outline-success">Registrar salida</button>
+                    </form>
+                @endif
+            </td>
+            <td>{{ $v->motivo }}</td>
+            <td class="text-nowrap">
+                <a href="{{ route('visitas.show', $v) }}" class="btn btn-sm btn-info">Ver</a>
+                <a href="{{ route('visitas.edit', $v) }}" class="btn btn-sm btn-warning">Editar</a>
+                <form method="POST" action="{{ route('visitas.destroy', $v) }}" class="d-inline"
+                      onsubmit="return confirm('¿Eliminar esta visita?')">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-sm btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    @empty
+        <tr><td colspan="7" class="text-center">Sin visitas registradas.</td></tr>
+    @endforelse
+    </tbody>
+</table>
 
-    <!-- FavIcon -->
-    <link rel="icon" type="image/png" href="{{ asset('img/logo_arco.png') }}">
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Iconos -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
-</head>
-
-<body>
-
-    <div class="login-container">
-
-        <div class="login-logo">
-            <img src="{{ asset('img/logo_arco.png') }}" alt="Logo ARCO">
-        </div>
-
-        <h2 class="login-title">¡Bienvenido!</h2>
-        <p class="login-subtitle">Inicia sesión en tu cuenta</p>
-
-        <form id="loginForm">
-
-            <!-- Usuario -->
-            <div class="mb-3">
-                <label for="usuario" class="form-label">Usuario o correo</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="usuario"
-                    placeholder="Ingresa tu usuario"
-                    required>
-            </div>
-
-            <!-- Contraseña -->
-            <div class="mb-3">
-                <label for="contrasena" class="form-label">Contraseña</label>
-                <div class="input-group">
-                    <input
-                        type="password"
-                        class="form-control"
-                        id="contrasena"
-                        placeholder="Ingresa tu contraseña"
-                        required>
-
-                    <button class="btn btn-outline-secondary"
-                        type="button" id="mostrarPassword">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Botón -->
-            <button type="submit" class="btn btn-login w-100">
-                <span>Iniciar sesión</span>
-                <i class="bi bi-arrow-right-circle-fill"></i>
-            </button>
-
-        </form>
-
-        <div class="register-link">
-            ¿No tienes una cuenta?
-            <a href="registro.php">Regístrate</a>
-        </div>
-
-    </div>
-
-    <script>
-        // Mostrar u ocultar contraseña
-        document.getElementById("mostrarPassword").addEventListener("click", function() {
-
-            const password = document.getElementById("contrasena");
-            const icon = this.querySelector("i");
-
-            if (password.type === "password") {
-                password.type = "text";
-                icon.classList.replace("bi-eye", "bi-eye-slash");
-            } else {
-                password.type = "password";
-                icon.classList.replace("bi-eye-slash", "bi-eye");
-            }
-        });
-
-        // Validación básica
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            const usuario = document.getElementById("usuario").value;
-            const contrasena = document.getElementById("contrasena").value;
-
-            alert("Formulario enviado correctamente. Falta conectar el inicio de sesión con la base de datos.");
-        });
-    </script>
-
-</body>
-
-</html>
+{{ $visitas->links() }}
+@endsection
