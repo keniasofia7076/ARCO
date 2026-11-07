@@ -9,12 +9,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('personal', function (Blueprint $table) {
-    $table->id('matricula');
-
+        Schema::create('persona', function (Blueprint $table) {
+    $table->unsignedBigInteger('matricula')->primary();
     $table->string('nombre', 100);
     $table->string('apellido_paterno', 100);
     $table->string('apellido_materno', 100)->nullable();
+
+    $table->string('password', 255)->nullable();
 
     $table->unsignedTinyInteger('tipo_personal')->default(1);
 

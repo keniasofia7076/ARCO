@@ -1,35 +1,33 @@
- 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Editar equipo | ARCO</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+    <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 35px;
+            background: #f3f6fb;
+            padding: 35px 15px;
         }
 
         .contenedor {
             max-width: 650px;
             margin: auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.08);
         }
 
         h1 {
-            color: #26354a;
-            margin-bottom: 8px;
+            color: #102d50;
+            font-weight: 700;
         }
 
         .descripcion {
@@ -40,21 +38,22 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 600;
             color: #333;
         }
 
         input, select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13,110,253,.12);
         }
 
         .botones {
@@ -63,19 +62,25 @@
             margin-top: 10px;
         }
 
-        button, .cancelar {
+        .botones button,
+        .cancelar {
             padding: 12px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
             text-align: center;
             font-size: 14px;
         }
 
-        button {
-            background: #0d6efd;
+        .guardar {
+            background: #123f75;
             color: white;
+            flex: 1;
+        }
+
+        .guardar:hover {
+            background: #071a36;
         }
 
         .cancelar {
@@ -83,12 +88,9 @@
             color: white;
         }
 
-        .errores {
-            background: #f8d7da;
-            color: #842029;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        .cancelar:hover {
+            background: #565e64;
+            color: white;
         }
     </style>
 </head>
@@ -97,15 +99,20 @@
 
 <div class="contenedor">
 
-    <h1>Editar equipo</h1>
+    <h1>
+        <i class="bi bi-pencil-square me-2"></i>
+        Editar equipo
+    </h1>
+
     <p class="descripcion">
         Modifica la información del equipo registrado.
     </p>
 
     @if($errors->any())
-        <div class="errores">
+        <div class="alert alert-danger">
             <strong>Revisa los siguientes errores:</strong>
-            <ul>
+
+            <ul class="mb-0">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -119,24 +126,11 @@
         @csrf
         @method('PUT')
 
-        <label>Alumno propietario</label>
+        {{-- Marca --}}
 
-        <select name="id_alumno" required>
-            @foreach($alumnos as $alumno)
-                <option value="{{ $alumno->id_alumno }}"
-                    {{ old('id_alumno', $equipo->id_alumno) == $alumno->id_alumno ? 'selected' : '' }}>
+        <label for="id_marca">Marca del equipo</label>
 
-                    {{ $alumno->matricula }} -
-                    {{ $alumno->persona->nombre }}
-                    {{ $alumno->persona->apellido_paterno }}
-
-                </option>
-            @endforeach
-        </select>
-
-        <label>Marca del equipo</label>
-
-        <select name="id_marca" required>
+        <select name="id_marca" id="id_marca" required>
             @foreach($marcas as $marca)
                 <option value="{{ $marca->id_marca }}"
                     {{ old('id_marca', $equipo->id_marca) == $marca->id_marca ? 'selected' : '' }}>
@@ -145,9 +139,11 @@
             @endforeach
         </select>
 
-        <label>Tipo de equipo</label>
+        {{-- Tipo de equipo --}}
 
-        <select name="tipo_equipo" required>
+        <label for="tipo_equipo">Tipo de equipo</label>
+
+        <select name="tipo_equipo" id="tipo_equipo" required>
             @foreach(['Laptop', 'Computadora de escritorio', 'Tablet', 'Otro'] as $tipo)
                 <option value="{{ $tipo }}"
                     {{ old('tipo_equipo', $equipo->tipo_equipo) == $tipo ? 'selected' : '' }}>
@@ -156,31 +152,44 @@
             @endforeach
         </select>
 
-        <label>Modelo</label>
+        {{-- Modelo --}}
+
+        <label for="modelo">Modelo</label>
 
         <input
             type="text"
+            id="modelo"
             name="modelo"
             maxlength="100"
             value="{{ old('modelo', $equipo->modelo) }}"
         >
 
-        <label>Número de serie</label>
+        {{-- Número de serie --}}
+
+        <label for="numero_serie">Número de serie</label>
 
         <input
             type="text"
+            id="numero_serie"
             name="numero_serie"
             maxlength="100"
             value="{{ old('numero_serie', $equipo->numero_serie) }}"
             required
         >
 
-        <div class="botones">
-            <button type="submit">Actualizar equipo</button>
+        {{-- Botones --}}
 
-            <a href="{{ route('equipos.index') }}" class="cancelar">
+        <div class="botones">
+
+            <button type="submit" class="guardar">
+                <i class="bi bi-check-circle me-1"></i>
+                Actualizar equipo
+            </button>
+
+            <a href="{{ route('home') }}" class="cancelar">
                 Cancelar
             </a>
+
         </div>
 
     </form>

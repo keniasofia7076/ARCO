@@ -1,6 +1,7 @@
- 
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             margin: auto;
             background: white;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 14px;
             box-shadow: 0 3px 12px rgba(0,0,0,.08);
         }
 
@@ -34,6 +35,14 @@
 
         .descripcion {
             color: #777;
+            margin-bottom: 25px;
+        }
+
+        .propietario {
+            background: #edf4ff;
+            color: #174ea6;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 25px;
         }
 
@@ -78,6 +87,10 @@
             color: white;
         }
 
+        button:hover {
+            background: #146c43;
+        }
+
         .cancelar {
             background: #6c757d;
             color: white;
@@ -98,9 +111,19 @@
 <div class="contenedor">
 
     <h1>Registrar equipo</h1>
+
     <p class="descripcion">
-        Ingresa la información del equipo que se registrará en ARCO.
+        Ingresa la información del equipo que deseas registrar en ARCO.
     </p>
+
+    <div class="propietario">
+        <strong>
+            <i>Propietario:</i>
+            {{ session('persona.nombre') }}
+        </strong>
+        <br>
+        Matrícula: {{ session('persona.matricula') }}
+    </div>
 
     @if($errors->any())
         <div class="errores">
@@ -115,23 +138,6 @@
 
     <form action="{{ route('equipos.store') }}" method="POST">
         @csrf
-
-        <label>Alumno propietario</label>
-
-        <select name="id_alumno" required>
-            <option value="">Selecciona un alumno</option>
-
-            @foreach($alumnos as $alumno)
-                <option value="{{ $alumno->id_alumno }}"
-                    {{ old('id_alumno') == $alumno->id_alumno ? 'selected' : '' }}>
-
-                    {{ $alumno->matricula }} -
-                    {{ $alumno->persona->nombre }}
-                    {{ $alumno->persona->apellido_paterno }}
-
-                </option>
-            @endforeach
-        </select>
 
         <label>Marca del equipo</label>
 
@@ -180,7 +186,7 @@
         <div class="botones">
             <button type="submit">Guardar equipo</button>
 
-            <a href="{{ route('equipos.index') }}" class="cancelar">
+            <a href="{{ route('home') }}" class="cancelar">
                 Cancelar
             </a>
         </div>

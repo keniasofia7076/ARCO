@@ -6,13 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
 
-    <!-- FavIcon -->
     <link rel="icon" type="image/png" href="{{ asset('img/logo_arco.png') }}">
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
@@ -29,27 +26,36 @@
         <h2 class="login-title">¡Bienvenido!</h2>
         <p class="login-subtitle">Inicia sesión en tu cuenta</p>
 
-        <form id="loginForm">
+        <form id="loginForm" action="{{ route('login.validar') }}" method="POST">
+            @csrf
 
-            <!-- Usuario -->
+            <!-- Matrícula -->
             <div class="mb-3">
-                <label for="usuario" class="form-label">Usuario o correo</label>
+                <label for="matricula" class="form-label">Matrícula</label>
                 <input
                     type="text"
                     class="form-control"
-                    id="usuario"
-                    placeholder="Ingresa tu usuario"
+                    id="matricula"
+                    name="matricula"
+                    value="{{ old('matricula') }}"
+                    placeholder="Ingresa tu matrícula"
                     required>
+
+                @error('matricula')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <!-- Contraseña -->
             <div class="mb-3">
-                <label for="contrasena" class="form-label">Contraseña</label>
+                <label for="password" class="form-label">Contraseña</label>
+
                 <div class="input-group">
                     <input
                         type="password"
                         class="form-control"
-                        id="contrasena"
+                        id="password"
+                        name="password"
                         placeholder="Ingresa tu contraseña"
                         required>
 
@@ -58,6 +64,10 @@
                         <i class="bi bi-eye"></i>
                     </button>
                 </div>
+
+                @error('password')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <!-- Botón -->
@@ -70,7 +80,7 @@
 
         <div class="register-link">
             ¿No tienes una cuenta?
-            <a href="registro.php">Regístrate</a>
+            <a href="{{ route('personas.create') }}">Regístrate</a>
         </div>
 
     </div>
@@ -79,7 +89,7 @@
         // Mostrar u ocultar contraseña
         document.getElementById("mostrarPassword").addEventListener("click", function() {
 
-            const password = document.getElementById("contrasena");
+            const password = document.getElementById("password");
             const icon = this.querySelector("i");
 
             if (password.type === "password") {
@@ -90,18 +100,7 @@
                 icon.classList.replace("bi-eye-slash", "bi-eye");
             }
         });
-
-        // Validación básica
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            const usuario = document.getElementById("usuario").value;
-            const contrasena = document.getElementById("contrasena").value;
-
-            alert("Formulario enviado correctamente. Falta conectar el inicio de sesión con la base de datos.");
-        });
     </script>
 
 </body>
-
 </html>

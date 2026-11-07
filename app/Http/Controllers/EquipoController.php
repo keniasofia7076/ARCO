@@ -3,22 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipo;
-use App\Models\Alumno;
 use App\Models\Marca;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class EquipoController extends Controller
 {
-    // Mostrar todos los equipos
+    // Mostrar los equipos del usuario
     public function index()
     {
-        $equipos = Equipo::with([
-            'alumno.persona',
-            'marca'
-        ])
-        ->orderByDesc('id_equipo')
-        ->paginate(10);
+        $matricula = session('persona.matricula');
+
+        $equipos = Equipo::with(['persona', 'marca'])
+            ->where('propietario', $matricula)
+            ->orderByDesc('id_equipo')
+            ->paginate(10);
 
         return view('equipos.index', compact('equipos'));
     }
@@ -26,25 +25,15 @@ class EquipoController extends Controller
     // Mostrar formulario de registro
     public function create()
     {
-        $alumnos = Alumno::with('persona')->get();
-
         $marcas = Marca::orderBy('nombre')->get();
 
-        return view('equipos.create', compact(
-            'alumnos',
-            'marcas'
-        ));
+        return view('equipos.create', compact('marcas'));
     }
 
     // Guardar equipo
     public function store(Request $request)
     {
         $datos = $request->validate([
-            'id_alumno' => [
-                'required',
-                'exists:alumno,id_alumno'
-            ],
-
             'id_marca' => [
                 'required',
                 'exists:marca,id_marca'
@@ -70,40 +59,43 @@ class EquipoController extends Controller
             ]
         ]);
 
+        $matricula = session('persona.matricula');
+
+        if (!$matricula) {
+            return redirect()->route('login');
+        }
+
+        $datos['propietario'] = $matricula;
+
         Equipo::create($datos);
 
         return redirect()
-            ->route('equipos.index')
+            ->route('home')
             ->with('success', 'Equipo registrado correctamente.');
     }
 
     // Mostrar formulario de edición
     public function edit(string $id)
     {
-        $equipo = Equipo::findOrFail($id);
+        $matricula = session('persona.matricula');
 
-        $alumnos = Alumno::with('persona')->get();
+        $equipo = Equipo::where('propietario', $matricula)
+            ->findOrFail($id);
 
         $marcas = Marca::orderBy('nombre')->get();
 
-        return view('equipos.edit', compact(
-            'equipo',
-            'alumnos',
-            'marcas'
-        ));
+        return view('equipos.edit', compact('equipo', 'marcas'));
     }
 
     // Actualizar equipo
     public function update(Request $request, string $id)
     {
-        $equipo = Equipo::findOrFail($id);
+        $matricula = session('persona.matricula');
+
+        $equipo = Equipo::where('propietario', $matricula)
+            ->findOrFail($id);
 
         $datos = $request->validate([
-            'id_alumno' => [
-                'required',
-                'exists:alumno,id_alumno'
-            ],
-
             'id_marca' => [
                 'required',
                 'exists:marca,id_marca'
@@ -133,25 +125,28 @@ class EquipoController extends Controller
         $equipo->update($datos);
 
         return redirect()
-            ->route('equipos.index')
+            ->route('home')
             ->with('success', 'Equipo actualizado correctamente.');
     }
 
     // Eliminar equipo
     public function destroy(string $id)
     {
-        $equipo = Equipo::findOrFail($id);
+        $matricula = session('persona.matricula');
+
+        $equipo = Equipo::where('propietario', $matricula)
+            ->findOrFail($id);
 
         if ($equipo->movimientos()->exists()) {
             return redirect()
-                ->route('equipos.index')
+                ->route('home')
                 ->with('error', 'No se puede eliminar porque tiene movimientos registrados.');
         }
 
         $equipo->delete();
 
         return redirect()
-            ->route('equipos.index')
+            ->route('home')
             ->with('success', 'Equipo eliminado correctamente.');
     }
 }

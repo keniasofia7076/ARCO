@@ -13,20 +13,20 @@ class Equipo extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_alumno',
+        'propietario',
         'id_marca',
         'numero_serie',
         'tipo_equipo',
         'modelo'
     ];
 
-    // Relación con alumno
-    public function alumno()
+    // Relación con la persona propietaria
+    public function persona()
     {
         return $this->belongsTo(
-            Alumno::class,
-            'id_alumno',
-            'id_alumno'
+            Persona::class,
+            'propietario',
+            'matricula'
         );
     }
 
@@ -50,3 +50,5 @@ class Equipo extends Model
         );
     }
 }
+
+?>
