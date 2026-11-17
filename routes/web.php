@@ -41,3 +41,17 @@ Route::post('/equipos/{id}/entrada', [MovimientoEquipoController::class, 'entrad
 
 Route::post('/equipos/{id}/salida', [MovimientoEquipoController::class, 'salida'])
     ->name('movimientos.salida');
+
+// Panel de administrador
+Route::middleware(['admin'])->group(function () {
+
+    Route::get('/admin', function () {
+        return view('admin.index');
+    })->name('admin.index');
+
+    Route::get('/admin/estudiantes', [PersonaController::class, 'adminEstudiantes'])
+        ->name('admin.estudiantes');
+
+    Route::post('/admin/estudiantes/{id}/baja', [PersonaController::class, 'darDeBaja'])
+        ->name('admin.estudiantes.baja');
+});

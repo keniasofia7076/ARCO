@@ -17,8 +17,12 @@ class LoginController extends Controller
 
         $persona = Persona::find($datos['matricula']);
 
-        if (!$persona || !$persona->password ||
-            !Hash::check($datos['password'], $persona->password)) {
+        if (
+            !$persona ||
+            !$persona->activo ||
+            !$persona->password ||
+            !Hash::check($datos['password'], $persona->password)
+        ) {
 
             return back()->withErrors([
                 'matricula' => 'La matrícula o contraseña son incorrectas.',

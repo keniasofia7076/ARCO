@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Persona extends Model
 {
-  protected $table = 'persona';
+    protected $table = 'persona';
 
     protected $primaryKey = 'matricula';
 
@@ -24,6 +24,7 @@ class Persona extends Model
         'tipo_personal',
         'id_edificio',
         'password',
+        'activo',
     ];
 
     protected $hidden = [
@@ -34,6 +35,25 @@ class Persona extends Model
     {
         return [
             'password' => 'hashed',
+            'activo' => 'boolean',
         ];
+    }
+    public function equipos()
+    {
+        return $this->hasMany(
+            Equipo::class,
+            'propietario',
+            'matricula'
+        );
+    }
+
+    // Relación con edificio
+    public function edificio()
+    {
+        return $this->belongsTo(
+            Edificio::class,
+            'id_edificio',
+            'id_edificio'
+        );
     }
 }

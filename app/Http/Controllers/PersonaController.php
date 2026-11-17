@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Persona;
 use App\Models\Edificio;
@@ -20,7 +21,41 @@ class PersonaController extends Controller
             ->paginate(10);
 
         return redirect()
-                ->route('home');
+            ->route('home');
+    }
+
+    // Listado de estudiantes para el administrador.
+    public function adminEstudiantes()
+    {
+        $personas = Persona::where('tipo_personal', 1)
+            ->orderBy('matricula')
+            ->paginate(10);
+
+        return view('admin.estudiantes.index', compact('personas'));
+    }
+
+    // Dar de baja a un estudiante y sus equipos.
+    public function darDeBaja(string $id)
+    {
+        $persona = Persona::where('tipo_personal', 1)
+            ->findOrFail($id);
+
+        DB::transaction(function () use ($persona) {
+
+            // Desactivar todos los equipos del estudiante.
+            $persona->equipos()->update([
+                'activo' => false,
+            ]);
+
+            // Dar de baja al estudiante.
+            $persona->update([
+                'activo' => false,
+            ]);
+        });
+
+        return redirect()
+            ->route('admin.estudiantes')
+            ->with('success', 'El estudiante y sus equipos fueron dados de baja correctamente.');
     }
 
     /**
@@ -39,20 +74,20 @@ class PersonaController extends Controller
     public function store(Request $request)
     {
         $datos = $request->validate([
-        'matricula' => 'required|integer|min:1|unique:persona,matricula',
-        'nombre' => 'required|string|max:100',
-        'apellido_paterno' => 'required|string|max:100',
-        'apellido_materno' => 'nullable|string|max:100',
-        'id_edificio' => 'nullable|exists:edificio,id_edificio',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
+            'matricula' => 'required|integer|min:1|unique:persona,matricula',
+            'nombre' => 'required|string|max:100',
+            'apellido_paterno' => 'required|string|max:100',
+            'apellido_materno' => 'nullable|string|max:100',
+            'id_edificio' => 'nullable|exists:edificio,id_edificio',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-    $datos['tipo_personal'] = 1;
+        $datos['tipo_personal'] = 1;
 
-    Persona::create($datos);
+        Persona::create($datos);
 
-    return redirect()->route('login')
-        ->with('success', 'Persona registrada correctamente.');
+        return redirect()->route('login')
+            ->with('success', 'Persona registrada correctamente.');
     }
 
     /**
@@ -85,53 +120,53 @@ class PersonaController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-{
-    $persona = Persona::findOrFail($id);
+    {
+        $persona = Persona::findOrFail($id);
 
-    $datos = $request->validate([
-        'matricula' => [
-            'required',
-            'integer',
-            'min:1',
-            Rule::unique('persona', 'matricula')
-                ->ignore($persona->matricula, 'matricula'),
-        ],
-        'nombre' => 'required|string|max:100',
-        'apellido_paterno' => 'required|string|max:100',
-        'apellido_materno' => 'nullable|string|max:100',
-        'id_edificio' => 'nullable|exists:edificio,id_edificio',
-        'password' => 'nullable|string|min:8|confirmed',
-    ]);
+        $datos = $request->validate([
+            'matricula' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('persona', 'matricula')
+                    ->ignore($persona->matricula, 'matricula'),
+            ],
+            'nombre' => 'required|string|max:100',
+            'apellido_paterno' => 'required|string|max:100',
+            'apellido_materno' => 'nullable|string|max:100',
+            'id_edificio' => 'nullable|exists:edificio,id_edificio',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
 
-    // Si no escribe una nueva contraseña, conserva la actual.
-    if (empty($datos['password'])) {
-        unset($datos['password']);
+        // Si no escribe una nueva contraseña, conserva la actual.
+        if (empty($datos['password'])) {
+            unset($datos['password']);
+        }
+
+        // Actualizar los datos de la persona.
+        $persona->update($datos);
+
+        // Actualizar los datos de la sesión.
+        $request->session()->put('persona', [
+            'matricula' => $persona->matricula,
+            'nombre' => $persona->nombre,
+            'tipo_personal' => $persona->tipo_personal,
+        ]);
+
+        return redirect()->route('home')
+            ->with('success', 'Tus datos se actualizaron correctamente.');
     }
-
-    // Actualizar los datos de la persona.
-    $persona->update($datos);
-
-    // Actualizar los datos de la sesión.
-    $request->session()->put('persona', [
-        'matricula' => $persona->matricula,
-        'nombre' => $persona->nombre,
-        'tipo_personal' => $persona->tipo_personal,
-    ]);
-
-    return redirect()->route('home')
-        ->with('success', 'Tus datos se actualizaron correctamente.');
-}
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-       $persona = Persona::findOrFail($id);
+        $persona = Persona::findOrFail($id);
 
         $persona->delete();
 
         return redirect()
-                ->route('home');
+            ->route('home');
     }
 }

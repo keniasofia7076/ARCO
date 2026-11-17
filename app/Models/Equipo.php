@@ -17,7 +17,8 @@ class Equipo extends Model
         'id_marca',
         'numero_serie',
         'tipo_equipo',
-        'modelo'
+        'modelo',
+        'activo',
     ];
 
     // Relación con la persona propietaria
@@ -49,6 +50,11 @@ class Equipo extends Model
             'id_equipo'
         );
     }
-}
 
-?>
+    protected function casts(): array
+    {
+        return [
+            'activo' => 'boolean',
+        ];
+    }
+}
