@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\Persona;
 use App\Models\Edificio;
@@ -142,6 +143,24 @@ class PersonaController extends Controller
      */
     public function edit(string $id)
     {
+        $matriculaSesion = session('persona.matricula');
+        $tipoPersonal = session('persona.tipo_personal');
+
+        // Verificar que exista una sesión.
+        if (!$matriculaSesion) {
+            abort(403);
+        }
+
+        // Los estudiantes solamente pueden editar sus propios datos.
+        if ($tipoPersonal == 1 && $id != $matriculaSesion) {
+            abort(403);
+        }
+
+        // Solamente estudiantes y administradores pueden editar.
+        if (!in_array($tipoPersonal, [1, 2])) {
+            abort(403);
+        }
+
         $persona = Persona::findOrFail($id);
 
         $edificios = Edificio::all();
@@ -157,9 +176,30 @@ class PersonaController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $matriculaSesion = $request->session()->get('persona.matricula');
+        $tipoPersonal = $request->session()->get('persona.tipo_personal');
+
+        // Verificar que exista una sesión.
+        if (!$matriculaSesion) {
+            abort(403);
+        }
+
+        // Los estudiantes solamente pueden modificar sus propios datos.
+        if ($tipoPersonal == 1 && $id != $matriculaSesion) {
+            abort(403);
+        }
+
+        // Solamente estudiantes y administradores pueden actualizar.
+        if (!in_array($tipoPersonal, [1, 2])) {
+            abort(403);
+        }
+
         $persona = Persona::findOrFail($id);
 
-        $datos = $request->validate([
+        // Identificar si está editando sus propios datos.
+        $esPropioPerfil = $persona->matricula == $matriculaSesion;
+
+        $reglas = [
             'matricula' => [
                 'required',
                 'integer',
@@ -172,7 +212,29 @@ class PersonaController extends Controller
             'apellido_materno' => 'nullable|string|max:100',
             'id_edificio' => 'nullable|exists:edificio,id_edificio',
             'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        ];
+
+        // Solicitar contraseña actual cuando edita su propio perfil.
+        if ($esPropioPerfil) {
+            $reglas['current_password'] = 'required|string';
+        }
+
+        $datos = $request->validate($reglas);
+
+        // Comprobar que la contraseña actual sea correcta.
+        if ($esPropioPerfil && !Hash::check(
+            $datos['current_password'],
+            $persona->password
+        )) {
+            return back()
+                ->withErrors([
+                    'current_password' => 'La contraseña actual es incorrecta.',
+                ])
+                ->withInput();
+        }
+
+        // Eliminar el campo de contraseña actual para no guardarlo.
+        unset($datos['current_password']);
 
         // Si no escribe una nueva contraseña, conserva la actual.
         if (empty($datos['password'])) {
@@ -181,21 +243,21 @@ class PersonaController extends Controller
 
         $persona->update($datos);
 
-        // Si quien edita es administrador, regresar al listado.
-        if ($request->session()->get('persona.tipo_personal') == 2) {
-            return redirect()->route('admin.estudiantes')
-                ->with('success', 'Los datos del estudiante se actualizaron correctamente.');
+        // Si está editando sus propios datos, actualizar la sesión.
+        if ($esPropioPerfil) {
+            $request->session()->put('persona', [
+                'matricula' => $persona->matricula,
+                'nombre' => $persona->nombre,
+                'tipo_personal' => $persona->tipo_personal,
+            ]);
+
+            return redirect()->route('home')
+                ->with('success', 'Tus datos se actualizaron correctamente.');
         }
 
-        // Si es estudiante, actualizar sus datos de sesión.
-        $request->session()->put('persona', [
-            'matricula' => $persona->matricula,
-            'nombre' => $persona->nombre,
-            'tipo_personal' => $persona->tipo_personal,
-        ]);
-
-        return redirect()->route('home')
-            ->with('success', 'Tus datos se actualizaron correctamente.');
+        // Si el administrador edita a otro estudiante, regresar al listado.
+        return redirect()->route('admin.estudiantes')
+            ->with('success', 'Los datos del estudiante se actualizaron correctamente.');
     }
 
     /**

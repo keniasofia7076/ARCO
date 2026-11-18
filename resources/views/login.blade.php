@@ -78,11 +78,6 @@
 
         </form>
 
-        <div class="register-link">
-            ¿No tienes una cuenta?
-            <a href="{{ route('personas.create') }}">Regístrate</a>
-        </div>
-
     </div>
 
     <script>

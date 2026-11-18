@@ -144,6 +144,10 @@
                     <i class="bi bi-laptop"></i>Equipos
                 </a>
 
+                <a href="{{ route('admin.edificios.index') }}">
+                    <i class="bi bi-building"></i>Edificios
+                </a>
+
                 <a href="#" class="text-secondary" aria-disabled="true"
                     onclick="return false;">
                     <i class="bi bi-person-vcard"></i>Visitas

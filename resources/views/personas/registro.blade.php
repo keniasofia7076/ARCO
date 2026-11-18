@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -109,6 +110,23 @@
                     <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
+
+                <!-- Contraseña actual -->
+                @if(isset($persona) && $persona->matricula == session('persona.matricula'))
+                <div class="campo">
+                    <label for="current_password">Contraseña actual</label>
+                    <input
+                        type="password"
+                        id="current_password"
+                        name="current_password"
+                        placeholder="Ingresa tu contraseña actual"
+                        required>
+
+                    @error('current_password')
+                    <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+                @endif
 
                 <!-- Contraseña -->
                 <div class="campo">

@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\MovimientoEquipoController;
+use App\Http\Controllers\EdificioController;
 
 Route::get('/', function () {
     return view('login');
@@ -20,13 +21,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Página principal
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-//Persona
-Route::get('/personas/crear', [PersonaController::class, 'create'])
-    ->name('personas.create');
-
-Route::post('/personas', [PersonaController::class, 'store'])
-    ->name('personas.store');
-
+// Persona
 Route::get('/personas/{id}/editar', [PersonaController::class, 'edit'])
     ->name('personas.edit');
 
@@ -49,17 +44,26 @@ Route::middleware(['admin'])->group(function () {
         return view('admin.index');
     })->name('admin.index');
 
+    // Registro de estudiantes (solo administradores)
+    Route::get('/personas/crear', [PersonaController::class, 'create'])
+        ->name('personas.create');
+
+    Route::post('/personas', [PersonaController::class, 'store'])
+        ->name('personas.store');
+
     Route::get('/admin/estudiantes', [PersonaController::class, 'adminEstudiantes'])
         ->name('admin.estudiantes');
 
     Route::post('/admin/estudiantes/{id}/baja', [PersonaController::class, 'darDeBaja'])
         ->name('admin.estudiantes.baja');
 
-
     Route::post('/admin/estudiantes/{id}/reactivar', [PersonaController::class, 'reactivar'])
         ->name('admin.estudiantes.reactivar');
 
-
     Route::get('/admin/equipos', [EquipoController::class, 'adminEquipos'])
         ->name('admin.equipos');
+
+    // Gestión de edificios
+    Route::resource('/admin/edificios', EdificioController::class)
+        ->names('admin.edificios');
 });

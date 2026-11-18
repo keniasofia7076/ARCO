@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Edificio extends Model
 {
-     protected $table = 'edificio';
+    protected $table = 'edificio';
 
     protected $primaryKey = 'id_edificio';
 
@@ -16,4 +16,16 @@ class Edificio extends Model
         'nombre',
         'division',
     ];
+
+    // Personas relacionadas con el edificio.
+    public function personas()
+    {
+        return $this->hasMany(Persona::class, 'id_edificio', 'id_edificio');
+    }
+
+    // Visitas relacionadas con el edificio.
+    public function visitas()
+    {
+        return $this->hasMany(Visita::class, 'id_edificio', 'id_edificio');
+    }
 }
