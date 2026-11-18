@@ -22,6 +22,32 @@ class EquipoController extends Controller
         return view('equipos.index', compact('equipos'));
     }
 
+    // Mostrar todos los equipos para el administrador
+    public function adminEquipos(Request $request)
+    {
+        $busqueda = $request->input('buscar');
+
+        $equipos = Equipo::with([
+            'persona',
+            'marca',
+            'movimientos' => function ($query) {
+                $query->orderByDesc('fecha_hora_entrada');
+            }
+        ])
+            ->withCount('movimientos')
+            ->when($busqueda, function ($query) use ($busqueda) {
+                $query->where(function ($q) use ($busqueda) {
+                    $q->where('propietario', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('numero_serie', 'ILIKE', "%{$busqueda}%");
+                });
+            })
+            ->orderByDesc('id_equipo')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.equipos.index', compact('equipos', 'busqueda'));
+    }
+
     // Mostrar formulario de registro
     public function create()
     {

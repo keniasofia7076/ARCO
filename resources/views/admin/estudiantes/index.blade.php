@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo_arco.png') }}">
+
     <title>Estudiantes | ARCO</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,8 +16,9 @@
 
     <nav class="navbar navbar-dark" style="background: linear-gradient(90deg, #101827, #174ea6);">
         <div class="container-fluid px-4">
-            <a href="{{ route('admin.index') }}" class="navbar-brand fw-bold">
-                <i class="bi bi-shield-lock me-2"></i>ARCO | Administración
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
+                <img src="{{ asset('img/logo_arco.png') }}" alt="Logo ARCO" width="45px">
+                <span class="fw-bold">ARCO | Administración</span>
             </a>
 
             <a href="{{ route('admin.index') }}" class="btn btn-outline-light btn-sm">
@@ -39,6 +42,31 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
+
+                <form action="{{ route('admin.estudiantes') }}" method="GET" class="mb-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input
+                            type="text"
+                            name="buscar"
+                            class="form-control"
+                            placeholder="Buscar por matrícula o nombre del estudiante..."
+                            value="{{ $busqueda ?? '' }}">
+
+                        <button type="submit" class="btn btn-primary">
+                            Buscar
+                        </button>
+
+                        @if(!empty($busqueda))
+                        <a href="{{ route('admin.estudiantes') }}" class="btn btn-outline-secondary">
+                            Limpiar
+                        </a>
+                        @endif
+                    </div>
+                </form>
 
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -83,11 +111,24 @@
                                     <form action="{{ route('admin.estudiantes.baja', $persona->matricula) }}"
                                         method="POST"
                                         class="d-inline"
-                                        onsubmit="return confirm('¿Estás seguro de dar de baja a este estudiante y sus equipos?');">
+                                        onsubmit="return confirm('¿Dar de baja a este estudiante y sus equipos?');">
                                         @csrf
 
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            title="Dar de baja">
                                             <i class="bi bi-person-dash"></i>
+                                        </button>
+                                    </form>
+                                    @else
+                                    <form action="{{ route('admin.estudiantes.reactivar', $persona->matricula) }}"
+                                        method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('¿Reactivar a este estudiante y sus equipos?');">
+                                        @csrf
+
+                                        <button type="submit" class="btn btn-sm btn-outline-success"
+                                            title="Reactivar estudiante">
+                                            <i class="bi bi-person-plus"></i>
                                         </button>
                                     </form>
                                     @endif

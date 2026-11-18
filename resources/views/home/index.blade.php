@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo_arco.png') }}">
 
     <style>
         body {
@@ -87,138 +89,148 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-arco">
-    <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-arco">
+        <div class="container">
 
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
-            <img src="{{ asset('img/logo_arco.png') }}" alt="Logo ARCO">
-            <span class="fw-bold">ARCO</span>
-        </a>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
+                <img src="{{ asset('img/logo_arco.png') }}" alt="Logo ARCO">
+                <span class="fw-bold">ARCO</span>
+            </a>
 
-                <div class="ms-auto d-flex align-items-center gap-3">
+            <div class="ms-auto d-flex align-items-center gap-3">
 
-            <div class="dropdown">
+                <div class="dropdown">
 
-                <button
-                    class="btn btn-outline-light dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                    <button
+                        class="btn btn-outline-light dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
 
-                    <i class="bi bi-person-circle me-1"></i>
-                    {{ session('persona.nombre') }}
+                        <i class="bi bi-person-circle me-1"></i>
+                        {{ session('persona.nombre') }}
 
-                </button>
+                    </button>
 
-                <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end">
 
-                    <li>
-                        <a class="dropdown-item"
-                           href="{{ route('personas.edit', session('persona.matricula')) }}">
+                        <li>
+                            <a class="dropdown-item"
+                                href="{{ route('personas.edit', session('persona.matricula')) }}">
 
-                            <i class="bi bi-pencil-square me-2"></i>
-                            Editar mis datos
+                                <i class="bi bi-pencil-square me-2"></i>
+                                Editar mis datos
 
-                        </a>
-                    </li>
+                            </a>
+                        </li>
 
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
+                        @if(session('persona.tipo_personal') == 2)
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.index') }}">
+                                <i class="bi bi-shield-lock me-2"></i>
+                                Panel de administración
+                            </a>
+                        </li>
+                        @endif
 
-                    <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
 
-                            <button type="submit" class="dropdown-item text-danger">
 
-                                <i class="bi bi-box-arrow-right me-2"></i>
-                                Cerrar sesión
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
 
-                            </button>
-                        </form>
-                    </li>
+                                <button type="submit" class="dropdown-item text-danger">
 
-                </ul>
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    Cerrar sesión
+
+                                </button>
+                            </form>
+                        </li>
+
+                    </ul>
+
+                </div>
 
             </div>
 
         </div>
+    </nav>
 
-    </div>
-</nav>
+    <div class="container py-5">
 
-<div class="container py-5">
+        {{-- Mensajes del sistema --}}
 
-    {{-- Mensajes del sistema --}}
-
-    @if(session('success'))
+        @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
             <i class="bi bi-check-circle-fill me-2"></i>
             {{ session('success') }}
 
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    @endif
+        @endif
 
-    @if(session('error'))
+        @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show">
             <i class="bi bi-exclamation-circle-fill me-2"></i>
             {{ session('error') }}
 
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    @endif
+        @endif
 
-    {{-- Bienvenida --}}
+        {{-- Bienvenida --}}
 
-    <div class="welcome-card mb-5">
-        <h2 class="fw-bold">
-            ¡Bienvenido a ARCO!
-        </h2>
+        <div class="welcome-card mb-5">
+            <h2 class="fw-bold">
+                ¡Bienvenido a ARCO!
+            </h2>
 
-        <p class="mb-0 fs-5">
-            Hola, {{ session('persona.nombre') }}.
-            Administra tus equipos y registra sus entradas y salidas.
-        </p>
-    </div>
-
-    {{-- Encabezado de equipos --}}
-
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-
-        <div>
-            <h3 class="section-title mb-1">Mis equipos</h3>
-
-            <p class="text-muted mb-0">
-                Consulta y administra tus equipos registrados.
+            <p class="mb-0 fs-5">
+                Hola, {{ session('persona.nombre') }}.
+                Administra tus equipos y registra sus entradas y salidas.
             </p>
         </div>
 
-        <a href="{{ route('equipos.create') }}" class="btn btn-arco">
-            <i class="bi bi-plus-circle me-1"></i>
-            Registrar equipo
-        </a>
+        {{-- Encabezado de equipos --}}
 
-    </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-    {{-- Lista de equipos --}}
+            <div>
+                <h3 class="section-title mb-1">Mis equipos</h3>
 
-    <div class="row g-4">
+                <p class="text-muted mb-0">
+                    Consulta y administra tus equipos registrados.
+                </p>
+            </div>
 
-        @forelse($equipos as $equipo)
+            <a href="{{ route('equipos.create') }}" class="btn btn-arco">
+                <i class="bi bi-plus-circle me-1"></i>
+                Registrar equipo
+            </a>
+
+        </div>
+
+        {{-- Lista de equipos --}}
+
+        <div class="row g-4">
+
+            @forelse($equipos as $equipo)
 
             @php
-                $ultimoMovimiento = $equipo->ultimoMovimiento;
-                $entradaPendiente = $equipo->entradaPendiente;
+            $ultimoMovimiento = $equipo->ultimoMovimiento;
+            $entradaPendiente = $equipo->entradaPendiente;
 
-                $ultimaEntrada = $ultimoMovimiento && $ultimoMovimiento->fecha_hora_entrada
-                    ? $ultimoMovimiento->fecha_hora_entrada->timezone('America/Mexico_City')
-                    : null;
+            $ultimaEntrada = $ultimoMovimiento && $ultimoMovimiento->fecha_hora_entrada
+            ? $ultimoMovimiento->fecha_hora_entrada->timezone('America/Mexico_City')
+            : null;
 
-                $ultimaSalida = $ultimoMovimiento && $ultimoMovimiento->fecha_hora_salida
-                    ? $ultimoMovimiento->fecha_hora_salida->timezone('America/Mexico_City')
-                    : null;
+            $ultimaSalida = $ultimoMovimiento && $ultimoMovimiento->fecha_hora_salida
+            ? $ultimoMovimiento->fecha_hora_salida->timezone('America/Mexico_City')
+            : null;
             @endphp
 
             <div class="col-md-6 col-lg-4">
@@ -295,17 +307,17 @@
 
                             @if($entradaPendiente)
 
-                                <span class="badge bg-warning text-dark">
-                                    <i class="bi bi-clock me-1"></i>
-                                    Dentro de la institución
-                                </span>
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-clock me-1"></i>
+                                Dentro de la institución
+                            </span>
 
                             @else
 
-                                <span class="badge bg-success">
-                                    <i class="bi bi-check-circle me-1"></i>
-                                    Sin entrada pendiente
-                                </span>
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Sin entrada pendiente
+                            </span>
 
                             @endif
 
@@ -317,33 +329,33 @@
 
                         @if($entradaPendiente)
 
-                            <form action="{{ route('movimientos.salida', $equipo->id_equipo) }}"
-                                  method="POST"
-                                  class="mb-2">
+                        <form action="{{ route('movimientos.salida', $equipo->id_equipo) }}"
+                            method="POST"
+                            class="mb-2">
 
-                                @csrf
+                            @csrf
 
-                                <button type="submit" class="btn btn-danger w-100">
-                                    <i class="bi bi-box-arrow-right me-1"></i>
-                                    Registrar salida
-                                </button>
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-box-arrow-right me-1"></i>
+                                Registrar salida
+                            </button>
 
-                            </form>
+                        </form>
 
                         @else
 
-                            <form action="{{ route('movimientos.entrada', $equipo->id_equipo) }}"
-                                  method="POST"
-                                  class="mb-2">
+                        <form action="{{ route('movimientos.entrada', $equipo->id_equipo) }}"
+                            method="POST"
+                            class="mb-2">
 
-                                @csrf
+                            @csrf
 
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i>
-                                    Registrar entrada
-                                </button>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>
+                                Registrar entrada
+                            </button>
 
-                            </form>
+                        </form>
 
                         @endif
 
@@ -352,9 +364,9 @@
                         <div class="d-flex gap-2">
 
                             <button type="button"
-                                    class="btn btn-outline-primary flex-fill"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEquipo{{ $equipo->id_equipo }}">
+                                class="btn btn-outline-primary flex-fill"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalEquipo{{ $equipo->id_equipo }}">
 
                                 <i class="bi bi-eye"></i>
                                 Detalles
@@ -362,21 +374,26 @@
                             </button>
 
                             <a href="{{ route('equipos.edit', $equipo->id_equipo) }}"
-                               class="btn btn-outline-warning">
+                                class="btn btn-outline-warning">
 
                                 <i class="bi bi-pencil-square"></i>
 
                             </a>
 
                             <form action="{{ route('equipos.destroy', $equipo->id_equipo) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('¿Estás seguro de eliminar este equipo?')">
+                                method="POST"
+                                onsubmit="return confirm('¿Estás seguro de eliminar este equipo?')">
 
                                 @csrf
                                 @method('DELETE')
 
-                                <button type="submit" class="btn btn-outline-danger">
+                                <button type="submit"
+                                    class="btn btn-outline-danger"
+                                    {{ $equipo->movimientos()->exists() ? 'disabled' : '' }}
+                                    title="{{ $equipo->movimientos()->exists() ? 'No se puede eliminar porque tiene movimientos registrados' : 'Eliminar equipo' }}">
+
                                     <i class="bi bi-trash"></i>
+
                                 </button>
 
                             </form>
@@ -392,16 +409,16 @@
             {{-- Modal de detalles --}}
 
             <div class="modal fade"
-                 id="modalEquipo{{ $equipo->id_equipo }}"
-                 tabindex="-1"
-                 aria-hidden="true">
+                id="modalEquipo{{ $equipo->id_equipo }}"
+                tabindex="-1"
+                aria-hidden="true">
 
                 <div class="modal-dialog modal-dialog-centered">
 
                     <div class="modal-content border-0 rounded-4">
 
                         <div class="modal-header text-white"
-                             style="background: linear-gradient(135deg, #071a36, #15549a);">
+                            style="background: linear-gradient(135deg, #071a36, #15549a);">
 
                             <h5 class="modal-title">
                                 <i class="bi bi-laptop me-2"></i>
@@ -409,8 +426,8 @@
                             </h5>
 
                             <button type="button"
-                                    class="btn-close btn-close-white"
-                                    data-bs-dismiss="modal">
+                                class="btn-close btn-close-white"
+                                data-bs-dismiss="modal">
                             </button>
 
                         </div>
@@ -481,8 +498,8 @@
                         <div class="modal-footer">
 
                             <button type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal">
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
                                 Cerrar
                             </button>
 
@@ -494,7 +511,7 @@
 
             </div>
 
-        @empty
+            @empty
 
             <div class="col-12">
 
@@ -521,13 +538,14 @@
 
             </div>
 
-        @endforelse
+            @endforelse
+
+        </div>
 
     </div>
 
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

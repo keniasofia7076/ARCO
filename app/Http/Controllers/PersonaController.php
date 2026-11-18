@@ -25,13 +25,25 @@ class PersonaController extends Controller
     }
 
     // Listado de estudiantes para el administrador.
-    public function adminEstudiantes()
+    public function adminEstudiantes(Request $request)
     {
-        $personas = Persona::where('tipo_personal', 1)
-            ->orderBy('matricula')
-            ->paginate(10);
+        $busqueda = $request->input('buscar');
 
-        return view('admin.estudiantes.index', compact('personas'));
+        $personas = Persona::with('edificio')
+            ->where('tipo_personal', 1)
+            ->when($busqueda, function ($query) use ($busqueda) {
+                $query->where(function ($q) use ($busqueda) {
+                    $q->where('matricula', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('nombre', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('apellido_paterno', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('apellido_materno', 'ILIKE', "%{$busqueda}%");
+                });
+            })
+            ->orderBy('matricula')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.estudiantes.index', compact('personas', 'busqueda'));
     }
 
     // Dar de baja a un estudiante y sus equipos.
@@ -56,6 +68,30 @@ class PersonaController extends Controller
         return redirect()
             ->route('admin.estudiantes')
             ->with('success', 'El estudiante y sus equipos fueron dados de baja correctamente.');
+    }
+
+    // Reactivar a un estudiante y sus equipos.
+    public function reactivar(string $id)
+    {
+        $persona = Persona::where('tipo_personal', 1)
+            ->findOrFail($id);
+
+        DB::transaction(function () use ($persona) {
+
+            // Reactivar los equipos del estudiante.
+            $persona->equipos()->update([
+                'activo' => true,
+            ]);
+
+            // Reactivar al estudiante.
+            $persona->update([
+                'activo' => true,
+            ]);
+        });
+
+        return redirect()
+            ->route('admin.estudiantes')
+            ->with('success', 'El estudiante y sus equipos fueron reactivados correctamente.');
     }
 
     /**
@@ -143,10 +179,15 @@ class PersonaController extends Controller
             unset($datos['password']);
         }
 
-        // Actualizar los datos de la persona.
         $persona->update($datos);
 
-        // Actualizar los datos de la sesión.
+        // Si quien edita es administrador, regresar al listado.
+        if ($request->session()->get('persona.tipo_personal') == 2) {
+            return redirect()->route('admin.estudiantes')
+                ->with('success', 'Los datos del estudiante se actualizaron correctamente.');
+        }
+
+        // Si es estudiante, actualizar sus datos de sesión.
         $request->session()->put('persona', [
             'matricula' => $persona->matricula,
             'nombre' => $persona->nombre,

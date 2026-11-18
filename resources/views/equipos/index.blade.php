@@ -3,6 +3,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ asset('img/logo_arco.png') }}">
+
     <title>Equipos ARCO</title>
     <style>
         body {

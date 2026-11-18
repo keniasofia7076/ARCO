@@ -54,4 +54,12 @@ Route::middleware(['admin'])->group(function () {
 
     Route::post('/admin/estudiantes/{id}/baja', [PersonaController::class, 'darDeBaja'])
         ->name('admin.estudiantes.baja');
+
+
+    Route::post('/admin/estudiantes/{id}/reactivar', [PersonaController::class, 'reactivar'])
+        ->name('admin.estudiantes.reactivar');
+
+
+    Route::get('/admin/equipos', [EquipoController::class, 'adminEquipos'])
+        ->name('admin.equipos');
 });

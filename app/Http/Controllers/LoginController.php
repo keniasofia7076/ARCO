@@ -37,6 +37,10 @@ class LoginController extends Controller
             'tipo_personal' => $persona->tipo_personal,
         ]);
 
+        if ($persona->tipo_personal == 2) {
+            return redirect()->route('admin.index');
+        }
+
         return redirect()->route('home');
     }
 
