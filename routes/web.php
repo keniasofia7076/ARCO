@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\MovimientoEquipoController;
 use App\Http\Controllers\EdificioController;
+use App\Http\Controllers\VisitaController;
 
 Route::get('/', function () {
     return view('login');
@@ -66,4 +67,17 @@ Route::middleware(['admin'])->group(function () {
     // Gestión de edificios
     Route::resource('/admin/edificios', EdificioController::class)
         ->names('admin.edificios');
+
+    // Gestión de visitas
+    Route::get('/admin/visitas', [VisitaController::class, 'index'])
+        ->name('admin.visitas.index');
+
+    Route::get('/admin/visitas/crear', [VisitaController::class, 'create'])
+        ->name('admin.visitas.create');
+
+    Route::post('/admin/visitas', [VisitaController::class, 'store'])
+        ->name('admin.visitas.store');
+
+    Route::post('/admin/visitas/{id}/salida', [VisitaController::class, 'salida'])
+        ->name('admin.visitas.salida');
 });

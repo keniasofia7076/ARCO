@@ -148,10 +148,8 @@
                     <i class="bi bi-building"></i>Edificios
                 </a>
 
-                <a href="#" class="text-secondary" aria-disabled="true"
-                    onclick="return false;">
+                <a href="{{ route('admin.visitas.index') }}">
                     <i class="bi bi-person-vcard"></i>Visitas
-                    <small class="d-block ms-4">Próximamente</small>
                 </a>
 
                 <hr class="border-secondary my-4">
@@ -270,10 +268,11 @@
                                     las entradas y salidas de visitantes.
                                 </p>
 
-                                <button class="btn btn-outline-secondary w-100 mt-2"
-                                    disabled>
-                                    Próximamente
-                                </button>
+                                <a href="{{ route('admin.visitas.index') }}"
+                                    class="btn btn-primary w-100 mt-2">
+                                    Administrar visitas
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
                             </div>
                         </div>
 
