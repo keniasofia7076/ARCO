@@ -81,3 +81,23 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/visitas/{id}/salida', [VisitaController::class, 'salida'])
         ->name('admin.visitas.salida');
 });
+
+// Panel de seguridad
+Route::middleware(['seguridad'])->group(function () {
+
+    Route::get('/seguridad', function () {
+        return view('admin.index');
+    })->name('seguridad.index');
+
+    Route::get('/seguridad/visitas/crear', [VisitaController::class, 'create'])
+        ->name('seguridad.visitas.create');
+
+    Route::post('/seguridad/visitas', [VisitaController::class, 'store'])
+        ->name('seguridad.visitas.store');
+
+    Route::post('/seguridad/visitas/{id}/salida', [VisitaController::class, 'salida'])
+        ->name('seguridad.visitas.salida');
+
+        Route::get('/seguridad/visitas', [VisitaController::class, 'activas'])
+    ->name('seguridad.visitas.activas');
+});

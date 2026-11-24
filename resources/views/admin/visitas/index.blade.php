@@ -16,12 +16,14 @@
 
     <nav class="navbar navbar-dark" style="background: linear-gradient(90deg, #101827, #174ea6);">
         <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('home') }}">
+            <a class="navbar-brand d-flex align-items-center gap-2"
+                href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.index') : route('admin.index') }}">
                 <img src="{{ asset('img/logo_arco.png') }}" alt="Logo ARCO" width="45px">
                 <span class="fw-bold">ARCO | Administración</span>
             </a>
 
-            <a href="{{ route('admin.index') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.index') : route('admin.index') }}"
+                class="btn btn-outline-light btn-sm">
                 <i class="bi bi-arrow-left me-1"></i>Volver
             </a>
         </div>
@@ -35,7 +37,8 @@
                 <p class="text-muted mb-0">Consulta y administra las visitas registradas.</p>
             </div>
 
-            <a href="{{ route('admin.visitas.create') }}" class="btn btn-primary">
+            <a href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.visitas.create') : route('admin.visitas.create') }}"
+                class="btn btn-primary">
                 <i class="bi bi-person-plus me-1"></i>Registrar visita
             </a>
         </div>
@@ -57,8 +60,9 @@
         <div class="card border-0 shadow-sm">
             <div class="card-body">
 
+                <form action="{{ session('persona.tipo_personal') == 3 ? route('seguridad.visitas.activas') : route('admin.visitas.index') }}"
+                    method="GET" class="mb-4">
 
-                <form action="{{ route('admin.visitas.index') }}" method="GET" class="mb-4">
                     <div class="row g-2">
 
                         <div class="col-md-5">
@@ -95,9 +99,9 @@
                                 Buscar
                             </button>
 
-                            <a href="{{ route('admin.visitas.index') }}"
+                            <a href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.visitas.activas') : route('admin.visitas.index') }}"
                                 class="btn btn-outline-secondary">
-                                Hoy
+                                {{ session('persona.tipo_personal') == 3 ? 'Todas' : 'Hoy' }}
                             </a>
                         </div>
 
@@ -156,7 +160,9 @@
 
                                 <td class="text-center">
                                     @if(!$visita->fecha_hora_salida)
-                                    <form action="{{ route('admin.visitas.salida', $visita->id_visita) }}"
+                                    <form action="{{ session('persona.tipo_personal') == 3
+                                        ? route('seguridad.visitas.salida', $visita->id_visita)
+                                        : route('admin.visitas.salida', $visita->id_visita) }}"
                                         method="POST"
                                         onsubmit="return confirm('¿Registrar la salida de este visitante?')">
                                         @csrf

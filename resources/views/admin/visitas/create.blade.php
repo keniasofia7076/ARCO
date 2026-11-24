@@ -22,7 +22,8 @@
                 <span class="fw-bold">ARCO | Administración</span>
             </a>
 
-            <a href="{{ route('admin.visitas.index') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.index') : route('admin.index') }}"
+                class="btn btn-outline-light btn-sm">
                 <i class="bi bi-arrow-left me-1"></i>Volver
             </a>
         </div>
@@ -49,7 +50,7 @@
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
 
-                <form action="{{ route('admin.visitas.store') }}" method="POST">
+                <form action="{{ session('persona.tipo_personal') == 3 ? route('seguridad.visitas.store') : route('admin.visitas.store') }}" method="POST">
                     @csrf
 
                     <div class="row">
@@ -108,7 +109,7 @@
                             <i class="bi bi-person-plus me-1"></i>Registrar visita
                         </button>
 
-                        <a href="{{ route('admin.visitas.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.index') : route('admin.visitas.index') }}" class="btn btn-outline-secondary">
                             Cancelar
                         </a>
                     </div>

@@ -41,6 +41,10 @@ class LoginController extends Controller
             return redirect()->route('admin.index');
         }
 
+        if ($persona->tipo_personal == 3) {
+            return redirect()->route('seguridad.index');
+        }
+
         return redirect()->route('home');
     }
 

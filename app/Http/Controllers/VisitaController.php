@@ -55,6 +55,12 @@ class VisitaController extends Controller
 
         Visita::create($datos);
 
+        if (session('persona.tipo_personal') == 3) {
+            return redirect()
+                ->route('seguridad.visitas.activas')
+                ->with('success', 'Visita registrada correctamente.');
+        }
+
         return redirect()
             ->route('admin.visitas.index')
             ->with('success', 'Visita registrada correctamente.');
@@ -63,16 +69,44 @@ class VisitaController extends Controller
     // Registrar la salida de un visitante.
     public function salida(string $id)
     {
-        $visita = Visita::findOrFail($id);
+        $visita = Visita::whereNull('fecha_hora_salida')
+            ->findOrFail($id);
 
-        if ($visita->fecha_hora_salida === null) {
-            $visita->update([
-                'fecha_hora_salida' => now(),
-            ]);
+        $visita->update([
+            'fecha_hora_salida' => now()
+        ]);
+
+        if (session('persona.tipo_personal') == 3) {
+            return redirect()->route('seguridad.visitas.activas')
+                ->with('success', 'Salida registrada correctamente.');
         }
 
-        return redirect()
-            ->route('admin.visitas.index')
+        return redirect()->route('admin.visitas.index')
             ->with('success', 'Salida registrada correctamente.');
+    }
+
+    // Mostrar todas las visitas para el personal de seguridad.
+    public function activas(Request $request)
+    {
+        $busqueda = $request->input('buscar');
+        $fecha = $request->input('fecha');
+
+        $visitas = Visita::with('edificio')
+            ->when($fecha, function ($query) use ($fecha) {
+                $query->whereDate('fecha_hora_entrada', $fecha);
+            })
+            ->when($busqueda, function ($query) use ($busqueda) {
+                $query->where(function ($q) use ($busqueda) {
+                    $q->where('nombre', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('apellido_paterno', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('apellido_materno', 'ILIKE', "%{$busqueda}%")
+                        ->orWhere('correo', 'ILIKE', "%{$busqueda}%");
+                });
+            })
+            ->orderBy('fecha_hora_entrada', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.visitas.index', compact('visitas', 'busqueda', 'fecha'));
     }
 }

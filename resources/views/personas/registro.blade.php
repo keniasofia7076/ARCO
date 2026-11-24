@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -41,6 +40,26 @@
 
                 @if(isset($persona))
                 @method('PUT')
+                @endif
+
+                <!-- Tipo personal -->
+                @if(session('persona.tipo_personal') == 2)
+                <div class="campo">
+                    <label for="tipo_personal" class="form-label">Tipo de personal</label>
+
+                    <select name="tipo_personal" id="tipo_personal" class="form-select" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="1" {{ old('tipo_personal') == 1 ? 'selected' : '' }}>
+                            Estudiante
+                        </option>
+                        <option value="2" {{ old('tipo_personal') == 2 ? 'selected' : '' }}>
+                            Administrador
+                        </option>
+                        <option value="3" {{ old('tipo_personal') == 3 ? 'selected' : '' }}>
+                            Seguridad
+                        </option>
+                    </select>
+                </div>
                 @endif
 
                 <!-- Matricula -->

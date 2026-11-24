@@ -31,12 +31,12 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold text-dark">Gestión de estudiantes</h2>
-                <p class="text-muted mb-0">Consulta y administra los estudiantes de ARCO.</p>
+                <h2 class="fw-bold text-dark">Gestión de personal</h2>
+                <p class="text-muted mb-0">Consulta y administra al personal de ARCO.</p>
             </div>
 
             <a href="{{ route('personas.create') }}" class="btn btn-primary">
-                <i class="bi bi-person-plus me-1"></i>Agregar estudiante
+                <i class="bi bi-person-plus me-1"></i>Agregar personal
             </a>
         </div>
 
@@ -53,14 +53,27 @@
                             type="text"
                             name="buscar"
                             class="form-control"
-                            placeholder="Buscar por matrícula o nombre del estudiante..."
+                            placeholder="Buscar por matrícula o nombre del personal..."
                             value="{{ $busqueda ?? '' }}">
+
+                        <select name="tipo_personal" class="form-select" style="max-width: 190px;">
+                            <option value="">Todo el personal</option>
+                            <option value="1" {{ request('tipo_personal') == '1' ? 'selected' : '' }}>
+                                Estudiantes
+                            </option>
+                            <option value="2" {{ request('tipo_personal') == '2' ? 'selected' : '' }}>
+                                Administradores
+                            </option>
+                            <option value="3" {{ request('tipo_personal') == '3' ? 'selected' : '' }}>
+                                Seguridad
+                            </option>
+                        </select>
 
                         <button type="submit" class="btn btn-primary">
                             Buscar
                         </button>
 
-                        @if(!empty($busqueda))
+                        @if(!empty($busqueda) || request()->filled('tipo_personal'))
                         <a href="{{ route('admin.estudiantes') }}" class="btn btn-outline-secondary">
                             Limpiar
                         </a>

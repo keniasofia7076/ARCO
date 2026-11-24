@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('img/logo_arco.png') }}">
 
-    <title>Administración | ARCO</title>
+    <title>ARCO | {{ session('persona.tipo_personal') == 3 ? 'Seguridad' : 'Administración' }}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -127,14 +127,18 @@
                         </div>
 
                         <div class="small fw-normal text-secondary">
-                            Administración
+                            {{ session('persona.tipo_personal') == 3 ? 'Seguridad' : 'Administración' }}
                         </div>
                     </div>
                 </div>
 
-                <a href="{{ route('admin.index') }}" class="active">
+                <!-- Inicio -->
+                <a href="{{ session('persona.tipo_personal') == 3 ? route('seguridad.index') : route('admin.index') }}"
+                    class="active">
                     <i class="bi bi-grid"></i>Inicio
                 </a>
+
+                @if(session('persona.tipo_personal') == 2)
 
                 <a href="{{ route('admin.estudiantes') }}">
                     <i class="bi bi-people"></i>Estudiantes
@@ -152,14 +156,35 @@
                     <i class="bi bi-person-vcard"></i>Visitas
                 </a>
 
+                @elseif(session('persona.tipo_personal') == 3)
+
+                <a href="{{ route('seguridad.visitas.activas') }}">
+                    <i class="bi bi-person-vcard"></i>Visitas
+                </a>
+
+                <a href="{{ route('seguridad.visitas.create') }}">
+                    <i class="bi bi-person-plus"></i>Registrar visita
+                </a>
+
+                @endif
+
                 <hr class="border-secondary my-4">
 
+                <!-- Editar datos personales -->
+                <a href="{{ route('personas.edit', session('persona.matricula')) }}">
+                    <i class="bi bi-person-gear"></i>Editar mis datos
+                </a>
+
+                @if(session('persona.tipo_personal') == 2)
                 <a href="{{ route('home') }}">
                     <i class="bi bi-house"></i>Vista de usuario
                 </a>
+                @endif
 
+                <!-- Cerrar sesión -->
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
+
                     <button type="submit"
                         class="btn text-start w-100 text-danger mt-2"
                         style="padding: 13px 15px;">
@@ -175,8 +200,12 @@
 
                 <!-- Barra superior -->
                 <nav class="topbar d-flex justify-content-between align-items-center">
+
                     <div>
-                        <h5 class="mb-0 fw-bold">Panel de administración</h5>
+                        <h5 class="mb-0 fw-bold">
+                            {{ session('persona.tipo_personal') == 3 ? 'Panel de seguridad' : 'Panel de administración' }}
+                        </h5>
+
                         <small class="text-muted">Sistema ARCO</small>
                     </div>
 
@@ -185,10 +214,14 @@
                             <i class="bi bi-person-circle me-1"></i>
                             {{ session('persona.nombre') }}
                         </span>
+
                         <div>
-                            <small class="text-primary">Administrador</small>
+                            <small class="text-primary">
+                                {{ session('persona.tipo_personal') == 3 ? 'Personal de seguridad' : 'Administrador' }}
+                            </small>
                         </div>
                     </div>
+
                 </nav>
 
                 <div class="container-fluid p-4">
@@ -199,16 +232,32 @@
                             ¡Bienvenido, {{ session('persona.nombre') }}!
                         </h3>
 
+                        @if(session('persona.tipo_personal') == 3)
+
+                        <p class="mb-0">
+                            Desde aquí puedes registrar visitas y consultar
+                            los registros de entrada y salida de visitantes
+                            de la institución.
+                        </p>
+
+                        @else
+
                         <p class="mb-0">
                             Desde aquí puedes administrar los estudiantes,
                             equipos y visitas de la institución.
                         </p>
+
+                        @endif
                     </div>
 
                     <!-- Módulos -->
-                    <h5 class="section-title mb-3">Administración del sistema</h5>
+                    <h5 class="section-title mb-3">
+                        {{ session('persona.tipo_personal') == 3 ? 'Control de visitas' : 'Administración del sistema' }}
+                    </h5>
 
                     <div class="row g-4">
+
+                        @if(session('persona.tipo_personal') == 2)
 
                         <!-- Estudiantes -->
                         <div class="col-md-6 col-xl-4">
@@ -254,6 +303,27 @@
                             </div>
                         </div>
 
+                        <!-- Edificios -->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="dashboard-card">
+                                <div class="icon-box">
+                                    <i class="bi bi-building"></i>
+                                </div>
+
+                                <h5 class="fw-bold">Edificios</h5>
+
+                                <p class="text-muted">
+                                    Administra los edificios y sus divisiones.
+                                </p>
+
+                                <a href="{{ route('admin.edificios.index') }}"
+                                    class="btn btn-primary w-100 mt-2">
+                                    Administrar edificios
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Visitas -->
                         <div class="col-md-6 col-xl-4">
                             <div class="dashboard-card">
@@ -276,6 +346,54 @@
                             </div>
                         </div>
 
+                        @elseif(session('persona.tipo_personal') == 3)
+
+                        <!-- Todas las visitas -->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="dashboard-card">
+                                <div class="icon-box">
+                                    <i class="bi bi-person-vcard"></i>
+                                </div>
+
+                                <h5 class="fw-bold">Visitas</h5>
+
+                                <p class="text-muted">
+                                    Consulta todos los registros de visitantes,
+                                    tanto activos como finalizados.
+                                </p>
+
+                                <a href="{{ route('seguridad.visitas.activas') }}"
+                                    class="btn btn-primary w-100 mt-2">
+                                    Consultar visitas
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Registro de visitas -->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="dashboard-card">
+                                <div class="icon-box">
+                                    <i class="bi bi-person-plus"></i>
+                                </div>
+
+                                <h5 class="fw-bold">Registrar visita</h5>
+
+                                <p class="text-muted">
+                                    Registra los datos de los visitantes,
+                                    su destino y el motivo de su visita.
+                                </p>
+
+                                <a href="{{ route('seguridad.visitas.create') }}"
+                                    class="btn btn-primary w-100 mt-2">
+                                    Registrar visita
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        @endif
+
                     </div>
 
                     <!-- Información -->
@@ -289,12 +407,17 @@
 
                                     <div>
                                         <h6 class="fw-bold mb-1">
-                                            Acceso administrativo
+                                            {{ session('persona.tipo_personal') == 3 ? 'Acceso de seguridad' : 'Acceso administrativo' }}
                                         </h6>
 
                                         <p class="text-muted mb-0">
+                                            @if(session('persona.tipo_personal') == 3)
                                             Has iniciado sesión con permisos
-                                            de administrador en ARCO.
+                                            de personal de seguridad en ARCO.
+                                            @else
+                                            Has iniciado sesión con permisos
+                                            administrativos en ARCO.
+                                            @endif
                                         </p>
                                     </div>
                                 </div>

@@ -29,9 +29,12 @@ class PersonaController extends Controller
     public function adminEstudiantes(Request $request)
     {
         $busqueda = $request->input('buscar');
+        $tipoPersonal = $request->input('tipo_personal');
 
         $personas = Persona::with('edificio')
-            ->where('tipo_personal', 1)
+            ->when($tipoPersonal, function ($query) use ($tipoPersonal) {
+                $query->where('tipo_personal', $tipoPersonal);
+            })
             ->when($busqueda, function ($query) use ($busqueda) {
                 $query->where(function ($q) use ($busqueda) {
                     $q->where('matricula', 'ILIKE', "%{$busqueda}%")
@@ -119,7 +122,13 @@ class PersonaController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $datos['tipo_personal'] = 1;
+        if (session('persona.tipo_personal') == 2) {
+            $datos['tipo_personal'] = $request->validate([
+                'tipo_personal' => 'required|in:2,3',
+            ])['tipo_personal'];
+        } else {
+            $datos['tipo_personal'] = 1;
+        }
 
         Persona::create($datos);
 
@@ -156,8 +165,13 @@ class PersonaController extends Controller
             abort(403);
         }
 
-        // Solamente estudiantes y administradores pueden editar.
-        if (!in_array($tipoPersonal, [1, 2])) {
+        // Solamente estudiantes, administradores y seguridad pueden editar.
+        if (!in_array($tipoPersonal, [1, 2, 3])) {
+            abort(403);
+        }
+
+        // Seguridad solamente puede editar sus propios datos.
+        if ($tipoPersonal == 3 && $id != $matriculaSesion) {
             abort(403);
         }
 
@@ -189,8 +203,13 @@ class PersonaController extends Controller
             abort(403);
         }
 
-        // Solamente estudiantes y administradores pueden actualizar.
-        if (!in_array($tipoPersonal, [1, 2])) {
+        // Solamente estudiantes, administradores y seguridad pueden actualizar.
+        if (!in_array($tipoPersonal, [1, 2, 3])) {
+            abort(403);
+        }
+
+        // Seguridad solamente puede actualizar sus propios datos.
+        if ($tipoPersonal == 3 && $id != $matriculaSesion) {
             abort(403);
         }
 
@@ -250,6 +269,16 @@ class PersonaController extends Controller
                 'nombre' => $persona->nombre,
                 'tipo_personal' => $persona->tipo_personal,
             ]);
+
+            if ($tipoPersonal == 2) {
+                return redirect()->route('admin.index')
+                    ->with('success', 'Tus datos se actualizaron correctamente.');
+            }
+
+            if ($tipoPersonal == 3) {
+                return redirect()->route('seguridad.index')
+                    ->with('success', 'Tus datos se actualizaron correctamente.');
+            }
 
             return redirect()->route('home')
                 ->with('success', 'Tus datos se actualizaron correctamente.');
